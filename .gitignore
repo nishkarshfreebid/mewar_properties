@@ -38,3 +38,11 @@ Thumbs.db
 .vscode/
 *.swp
 *.tmp
+
+# Local deployment and recovery files
+/backup/
+/backend-production-restore/
+/backend/public/storage1/
+/backend/public/error_log
+/backend/public/hosting-check.php
+/backend/public/.htaccess_bkp*
