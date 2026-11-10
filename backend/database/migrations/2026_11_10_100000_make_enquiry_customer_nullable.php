@@ -1,21 +1,28 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('enquiries', function (Blueprint $table) {
-            $table->foreignId('customer_id')->nullable()->change();
-        });
+        DB::statement(
+            'ALTER TABLE enquiries DROP FOREIGN KEY enquiries_customer_id_foreign'
+        );
+
+        DB::statement(
+            'ALTER TABLE enquiries MODIFY customer_id BIGINT UNSIGNED NULL'
+        );
+
+        DB::statement(
+            'ALTER TABLE enquiries ADD CONSTRAINT enquiries_customer_id_foreign
+             FOREIGN KEY (customer_id) REFERENCES users(id)'
+        );
     }
 
     public function down(): void
     {
-        // Manual enquiries may legitimately have no customer login account.
-        // Keep this column nullable when rolling back unrelated migrations.
+        // Keep customer_id nullable to preserve manually created enquiries.
     }
 };
