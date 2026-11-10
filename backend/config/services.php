@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+    'account_provisioning_token' => env('ACCOUNT_PROVISIONING_TOKEN'),
     /*
     |--------------------------------------------------------------------------
     | Third Party Services

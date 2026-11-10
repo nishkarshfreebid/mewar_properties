@@ -3,7 +3,7 @@
 use Illuminate\Support\Str;
 
 return [
-
+    'account_provisioning_token' => env('ACCOUNT_PROVISIONING_TOKEN'),
     /*
     |--------------------------------------------------------------------------
     | Default Session Driver
@@ -129,7 +129,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug((string) env('APP_NAME', 'laravel')).'-session'
+        Str::slug((string) env('APP_NAME', 'laravel')) . '-session'
     ),
 
     /*
