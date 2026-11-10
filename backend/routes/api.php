@@ -9,9 +9,15 @@ use App\Http\Controllers\Api\V1\PropertyMediaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AdminUserController;
+use App\Http\Controllers\Api\V1\AccountProvisioningController;
 use App\Http\Controllers\Api\V1\AdminDashboardController;
 
 Route::prefix('v1')->name('api.v1.')->group(function () {
+
+    Route::post('/internal/provision-account', [
+        AccountProvisioningController::class,
+        'store',
+    ])->middleware('throttle:3,1')->name('internal.provision-account');
     // Public property listing
     Route::get('/properties', [PropertyController::class, 'index'])
         ->name('properties.index');
@@ -174,12 +180,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             ->middleware('permission:enquiry.manage_all|enquiry.manage_assigned|enquiry.manage_own_property')
             ->name('enquiries.activities.store');
 
-  Route::get('/enquiries/follow-ups', [
-    \App\Http\Controllers\Api\V1\EnquiryFollowUpController::class,
-    'index',
-])
-    ->middleware('permission:enquiry.manage_all|enquiry.view_assigned')
-    ->name('enquiries.follow-ups');
+        Route::get('/enquiries/follow-ups', [
+            \App\Http\Controllers\Api\V1\EnquiryFollowUpController::class,
+            'index',
+        ])
+            ->middleware('permission:enquiry.manage_all|enquiry.view_assigned')
+            ->name('enquiries.follow-ups');
 
 
         // ==========================================
@@ -223,6 +229,8 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::post('/payments/{payment}/reconcile', [PaymentController::class, 'reconcile'])
             ->middleware('throttle:10,1')
             ->name('payments.reconcile');
+
+
 
     }); // End auth:sanctum group
 }); // End v1 route group
