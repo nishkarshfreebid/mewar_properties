@@ -190,4 +190,44 @@ class PropertyMediaController extends Controller
             ],
         ]);
     }
+    public function setPrimary(
+    Request $request,
+    Property $property,
+    PropertyMedia $media
+): JsonResponse {
+    $this->authorize('update', $property);
+
+    // Ensure the image belongs to this property.
+    abort_unless(
+     (int) $media->property_id === (int) $property->id,
+        404,
+        'Media not found for this property.'
+    );
+
+    // Only images can be primary.
+    if ($media->media_type !== 'image') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Only images can be set as primary.',
+        ], 422);
+    }
+
+    DB::transaction(function () use ($property, $media) {
+        // Remove primary status from all existing images.
+        $property->media()
+            ->where('media_type', 'image')
+            ->update(['is_primary' => false]);
+
+        // Set the selected image as primary.
+        $media->update(['is_primary' => true]);
+    });
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Primary image updated successfully.',
+        'data' => $property->media()
+            ->orderBy('sort_order')
+            ->get(),
+    ]);
+}
 }

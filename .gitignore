@@ -46,3 +46,32 @@ Thumbs.db
 /backend/public/error_log
 /backend/public/hosting-check.php
 /backend/public/.htaccess_bkp*
+
+# Local archives and backup directories
+/backupmain/
+/backend/backup/
+/backend/*.zip
+/backend.zip
+*.sql
+*.sql.gz
+
+# Accidental terminal-created files
+/backend/$*
+/backend/'*
+/backend/acceptJson()
+/backend/actingAs*
+/backend/assert*
+/backend/attach*
+/backend/create*
+/backend/get*
+/backend/json*
+/backend/lockForUpdate()
+/backend/now()
+/backend/post*
+/backend/save()
+/backend/timeout*
+/backend/toArray()
+/backend/toDateTimeString()
+/backend/validate*
+/backend/where*
+/backend/unique*

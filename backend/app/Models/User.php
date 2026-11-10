@@ -10,7 +10,12 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password'];
+protected $fillable = [
+    'name',
+    'email',
+    'password',
+    'is_active',
+];
     protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
@@ -18,6 +23,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+             'is_active' => 'boolean',
         ];
     }
 
@@ -64,7 +70,20 @@ class User extends Authenticatable
     public function hasPermission(string $name): bool
     {
         return $this->roles()->whereHas(
-            'permissions', fn ($query) => $query->where('permissions.name', $name)
+            'permissions',
+            fn($query) => $query->where('permissions.name', $name)
         )->exists();
+    }
+    public function hasAnyPermission(array $permissions): bool
+    {
+        if (empty($permissions)) {
+            return false;
+        }
+
+        return $this->roles()
+            ->whereHas('permissions', function ($query) use ($permissions) {
+                $query->whereIn('permissions.name', $permissions);
+            })
+            ->exists();
     }
 }

@@ -63,7 +63,7 @@ class AuthController extends Controller
             'device_name' => ['sometimes', 'string', 'max:100'],
         ]);
 
-        $key = 'login:'.Str::lower($data['email']).'|'.$request->ip();
+        $key = 'login:' . Str::lower($data['email']) . '|' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
             return response()->json([
@@ -75,9 +75,16 @@ class AuthController extends Controller
         $user = User::where('email', Str::lower($data['email']))->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            RateLimiter::hit($key, 60);
+            RateLimiter::hit($key);
+
             throw ValidationException::withMessages([
-                'email' => ['The supplied credentials are invalid.'],
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        if (!$user->is_active) {
+            throw ValidationException::withMessages([
+                'email' => ['Your account has been deactivated. Please contact the administrator.'],
             ]);
         }
 
@@ -98,9 +105,11 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         return response()->json([
-            'data' => ['user' => $this->payload(
-                $request->user()->load('roles.permissions')
-            )],
+            'data' => [
+                'user' => $this->payload(
+                    $request->user()->load('roles.permissions')
+                )
+            ],
         ]);
     }
 
@@ -125,7 +134,7 @@ class AuthController extends Controller
             'email' => $user->email,
             'roles' => $roles->pluck('name')->values(),
             'permissions' => $roles->flatMap(
-                fn ($role) => $role->permissions->pluck('name')
+                fn($role) => $role->permissions->pluck('name')
             )->unique()->values(),
         ];
     }
