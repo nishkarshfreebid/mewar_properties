@@ -1,0 +1,5 @@
+deployment:
+  tasks:
+    - export REPOPATH=/home1/appnewbi/repositories/mewar_properties_git/backend
+    - export DEPLOYPATH=/home1/appnewbi/mewar_api
+    - /usr/bin/rsync -a --exclude='.env' --exclude='public/' --exclude='storage/' --exclude='vendor/' "$REPOPATH/" "$DEPLOYPATH/"
